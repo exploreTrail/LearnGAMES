@@ -10,14 +10,36 @@ constexpr double MY_PI = 3.1415926;
 Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 {
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
-
+    Eigen::Vector3f f = -eye_pos;
+    f.normalize();
+    //left begin
+//    Eigen::Vector3f u = {0,1,0};
+//    Eigen::Vector3f r = u.cross(f);
+//    view << r.x(),r.y(),r.z(), 0,
+//            u.x(),u.y(),u.z(), 0,
+//            f.x(),f.y(),f.z(),0,
+//            0, 0, 0, 1;
+//    Eigen::Matrix4f translate;
+//    translate << 1, 0, 0, -eye_pos[0],
+//                0, 1, 0, -eye_pos[1],
+//                0, 0, 1,-eye_pos[2],
+//                0, 0, 0, 1;
+    //left end
+    
+    //right begin
+    Eigen::Vector3f u = {0,1,0};
+    Eigen::Vector3f r = f.cross(u);
+    view << r.x(),r.y(),r.z(), 0,
+            u.x(),u.y(),u.z(), 0,
+            -f.x(),-f.y(),-f.z(),0,
+            0, 0, 0, 1;
     Eigen::Matrix4f translate;
-    translate << 1,0,0,-eye_pos[0],
-                 0,1,0,-eye_pos[1],
-                 0,0,1,-eye_pos[2],
-                 0,0,0,1;
-
-    view = translate*view;
+    translate << 1, 0, 0, -eye_pos[0],
+                0, 1, 0, -eye_pos[1],
+                0, 0, 1,-eye_pos[2],
+                0, 0, 0, 1;
+    //right end
+    view =   view * translate;
 
     return view;
 }
@@ -28,18 +50,43 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     return model;
 }
 
-Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
+
+/**
+ * ref https://zhuanlan.zhihu.com/p/144329075
+*/
+Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
+                                      float zNear, float zFar)
 {
     // TODO: Copy-paste your implementation from the previous assignment.
     Eigen::Matrix4f projection;
-    float fovY = eye_fov * MY_PI / 180.0;
-  float cota = 1.f / tanf(fovY / 2);
-  float zD = zNear - zFar;
+    float fovY = eye_fov*MY_PI/180.0;
+    float cota = 1.f/tanf(fovY/2);
+    float zD = zNear-zFar;
+    projection << -cota/aspect_ratio, 0, 0, 0,
+                        0, -cota, 0, 0,
+                        0, 0, (zNear+zFar)/zD, -2*zNear*zFar/zD,
+                        0, 0, 1, 0;
 
-  projection << -cota / aspect_ratio, 0, 0, 0, 0, -cota, 0, 0, 0, 0,
-      (zNear + zFar) / zD, -2 * zNear * zFar / zD, 0, 0, 1, 0;
+    // Eigen::Matrix4f Mpersp, Mscale, Mtrans, MP2O;
+    // float fovY = eye_fov*PI/180.0;
+    // float t = abs(zNear)*tanf(fovY/2);
+    // float r = t*aspect_ratio;
 
-  return projection;
+    // Mscale << 1/r, 0, 0, 0,
+    //                         0, 1/t, 0, 0,
+    //                         0, 0, 2/(zNear-zFar), 0,
+    //                         0, 0, 0, 1;
+    // Mtrans << 1, 0, 0, 0,
+    //                     0, 1, 0, 0,
+    //                     0, 0, 1, -(zNear+zFar)/2,
+    //                     0, 0, 0, 1;
+    // MP2O << zNear, 0, 0, 0,
+    //                 0, zNear, 0, 0,
+    //                 0, 0, zNear+zFar, -zNear*zFar,
+    //                 0, 0, 1, 0;
+    // Mpersp = Mscale*Mtrans*MP2O;
+
+    return projection; 
 }
 
 int main(int argc, const char** argv)
@@ -120,7 +167,7 @@ int main(int argc, const char** argv)
 
         r.draw(pos_id, ind_id, col_id, rst::Primitive::Triangle);
 
-        cv::Mat image(700, 700, CV_32FC3, r.frame_buffer().data());
+        cv::Mat image(700, 700, CV_32FC3, r.data());
         image.convertTo(image, CV_8UC3, 1.0f);
         cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
         cv::imshow("image", image);
