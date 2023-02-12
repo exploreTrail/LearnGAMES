@@ -349,16 +349,8 @@ int main(int argc, const char **argv) {
   //   auto texture_path = "hmap.jpg";
   r.set_texture(Texture(obj_path + texture_path));
 
-  //   std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader =
-  //       phong_fragment_shader;
   std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader =
-      texture_fragment_shader;
-  //   std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader =
-  //       normal_fragment_shader;
-  //   std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader =
-  //       bump_fragment_shader;
-  //   std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader =
-  //       displacement_fragment_shader;
+      phong_fragment_shader;
   if (argc >= 2) {
     command_line = true;
     filename = std::string(argv[1]);
