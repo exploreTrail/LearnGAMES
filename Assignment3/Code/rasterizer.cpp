@@ -365,6 +365,7 @@ void rst::rasterizer::rasterize_triangle(
       }
     }
   }
+  return;
 }
 
 void rst::rasterizer::set_model(const Eigen::Matrix4f &m) { model = m; }
