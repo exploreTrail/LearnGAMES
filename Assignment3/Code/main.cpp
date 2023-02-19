@@ -129,6 +129,7 @@ texture_fragment_shader(const fragment_shader_payload &payload) {
   return result_color * 255.f;
 }
 
+// ref https://zhuanlan.zhihu.com/p/144331612
 Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload &payload) {
   Eigen::Vector3f ka = Eigen::Vector3f(0.005, 0.005, 0.005);
   Eigen::Vector3f kd = payload.color;

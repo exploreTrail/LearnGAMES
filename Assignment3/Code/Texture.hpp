@@ -28,6 +28,7 @@ public:
     return Eigen::Vector3f(color[0], color[1], color[2]);
   }
 
+  // ref https://zhuanlan.zhihu.com/p/144332091
   Eigen::Vector3f getColorBilinear(float u, float v) {
     float u_img = u * float(width);
     float v_img = (1 - v) * float(height);

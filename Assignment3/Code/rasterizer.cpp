@@ -214,6 +214,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
   }
 }
 
+// ref:https://zhuanlan.zhihu.com/p/144331875
 static Eigen::Vector3f interpolate(float alpha, float beta, float gamma,
                                    const Eigen::Vector3f &vert1,
                                    const Eigen::Vector3f &vert2,
